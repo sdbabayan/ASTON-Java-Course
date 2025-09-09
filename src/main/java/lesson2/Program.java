@@ -14,69 +14,67 @@ public class Program {
         System.out.println("Читаем файл...");
         try {
             Scanner.scan(path);
-        } catch (EmptyFileException e) {
+        } catch (MyIOException e) {
             System.out.println(e.getMessage());
         }
 
         System.out.println("Пишем в файл строку на латинице...");
         try {
             Printer.print(path, latinLine, StandardOpenOption.APPEND);
-        } catch (CyrillicLettersException e) {
+        } catch (MyIOException e) {
             System.out.println(e.getMessage());
         }
 
         System.out.println("Пишем в файл строку на кириллице...");
         try {
             Printer.print(path, cyrillicLine, StandardOpenOption.APPEND);
-        } catch (CyrillicLettersException e) {
+        } catch (MyIOException e) {
             System.out.println(e.getMessage());
         }
 
         System.out.println("Читаем файл...");
         try {
             Scanner.scan(path);
-        } catch (EmptyFileException e) {
+        } catch (MyIOException e) {
             System.out.println(e.getMessage());
         }
     }
 }
 
 class Printer {
-    public static void print(String path, String line, StandardOpenOption option) throws CyrillicLettersException {
+    public static void print(String path, String line, StandardOpenOption option) throws MyIOException {
         if (line.matches("[\\s\\S]*[А-Яа-яЁё][\\s\\S]*")) {
-            throw new CyrillicLettersException("ОШИБКА ЗАПИСИ: Для записи в файл cтрока «" + line.strip() +
-                    "» не должна содержать кириллические символы.");
+            throw new MyIOException("СТРОКА «" + line.strip() + "» НЕ ДОЛЖНА СОДЕРЖАТЬ КИРИЛЛИЧЕСКИЕ СИМВОЛЫ.");
         }
         try {
             Files.writeString(Paths.get(path), line, option);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            throw new MyIOException("ОШИБКА ЗАПИСИ", e);
         }
     }
 }
 
 class Scanner {
-    public static void scan(String path) throws EmptyFileException {
+    public static void scan(String path) throws MyIOException {
+        String text;
         try {
-            String text = Files.readString(Paths.get(path));
-            if (text.isEmpty()) {
-                throw new EmptyFileException("ОШИБКА ЧТЕНИЯ: Пустой файл!");
-            }
-            System.out.println(text);
+            text = Files.readString(Paths.get(path));
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            throw new MyIOException("ОШИБКА ЧТЕНИЯ!", e);
         }
+        if (text.isEmpty()) {
+            throw new MyIOException("ПУСТОЙ ФАЙЛ!");
+        }
+        System.out.println(text);
     }
 }
 
-class CyrillicLettersException extends Exception {
-    public CyrillicLettersException(String message) {
-        super(message);
+class MyIOException extends IOException {
+    public MyIOException(String message, Throwable cause) {
+        super(message, cause);
     }
-}
 
-class EmptyFileException extends Exception {
-    public EmptyFileException(String message) {
+    public MyIOException(String message) {
         super(message);
     }
 }
