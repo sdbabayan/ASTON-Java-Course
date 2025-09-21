@@ -73,11 +73,10 @@ class SpeedometerAdapterFromKmToMiles implements Speedometer {
 public class AdapterExample {
     public static void main(String[] args) {
         SpeedometerInKilometers speedometerInKilometers = new SpeedometerInKilometers(100.0, 50_000);
-        SpeedometerAdapterFromKmToMiles speedometerAdapterFromKmToMiles =
-                new SpeedometerAdapterFromKmToMiles(speedometerInKilometers);
+        Speedometer convertedSpeedometer = new SpeedometerAdapterFromKmToMiles(speedometerInKilometers);
         speedometerInKilometers.getSpeed();
         speedometerInKilometers.getMileage();
-        speedometerAdapterFromKmToMiles.getSpeed();
-        speedometerAdapterFromKmToMiles.getMileage();
+        convertedSpeedometer.getSpeed();
+        convertedSpeedometer.getMileage();
     }
 }
